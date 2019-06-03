@@ -5,7 +5,9 @@ ARG REQUESTED_RUBY_VERSION="2.6.3"
 # Install any requested ruby if not already preinstalled by the base image.
 # Tries installing a prebuilt package first, then falls back to a source build.
 
-RUN apt-get update -y \
+RUN if test -n "$REQUESTED_RUBY_VERSION" -a \
+  ! -x /rbenv/versions/$REQUESTED_RUBY_VERSION/bin/ruby; then \
+  (apt-get update -y \
   && apt-get install -y -q gcp-ruby-$REQUESTED_RUBY_VERSION) \
   || (cd /rbenv/plugins/ruby-build \
   && apt install -y graphicsmagick \
@@ -14,7 +16,9 @@ RUN apt-get update -y \
   && rbenv global $REQUESTED_RUBY_VERSION \
   && gem install -q --no-document bundler --version $BUNDLER_VERSION \
   && apt-get clean \
-  && rm -f /var/lib/apt/lists/*_*
+  && rm -f /var/lib/apt/lists/*_*; \
+  fi
+ENV RBENV_VERSION=${REQUESTED_RUBY_VERSION:-$RBENV_VERSION}
   
 ENV RACK_ENV=production \
   RAILS_ENV=production \
