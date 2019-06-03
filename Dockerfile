@@ -10,7 +10,7 @@ RUN if test -n "$REQUESTED_RUBY_VERSION" -a \
   (apt-get update -y \
   && apt-get install -y -q gcp-ruby-$REQUESTED_RUBY_VERSION) \
   || (cd /rbenv/plugins/ruby-build \
-  && apt install -y graphicsmagick \
+  && apt install -y libvips \
   && git pull \
   && rbenv install -s $REQUESTED_RUBY_VERSION) \
   && rbenv global $REQUESTED_RUBY_VERSION \
